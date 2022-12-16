@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String           @id @unique
+  name               String
+  email              String           @unique
+  password           String
+  category           String
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  usersLists         UsersList[]
+  CommonCategory     Category?        @relation(fields: [commonCategoryId], references: [id], name: "common Category")
+  commonCategoryId   String?
+  AdmCategory        Category         @relation(fields: [admCategoryId], references: [id])
+  admCategoryId      String?
+}
+
+model UsersList {
+  id                 String           @id @unique
+  categoryId         String
+  Category           Category         @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  users              User[]
+}
+
+model Category {
+  id          String                  @id @unique
+  name        String
+  title       String
+  description String
+  UsersList   UsersList[]
+  commons     User[]                  @relation(name: "Common Category")
+  adms        User[]
+}
